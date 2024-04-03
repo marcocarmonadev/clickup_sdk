@@ -1,19 +1,16 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
-from clickup_sdk.settings import get_settings
-from clickup_sdk.schemas import GetTasksResponse, Task, CustomField
-from clickup_sdk.helpers import microseconds_string_to_date, get_custom_field_value
-from httpx import HTTPStatusError
+from httpx import AsyncClient, HTTPStatusError
 
-if TYPE_CHECKING:
-    from clickup_sdk import Settings
-    from httpx import AsyncClient
+from clickup_sdk import Settings
+from clickup_sdk.helpers import get_custom_field_value, microseconds_string_to_date
+from clickup_sdk.schemas import CustomField, GetTasksResponse, Task
 
 
 @dataclass
 class Client:
-    settings: ClassVar["Settings"] = get_settings()
+    settings: ClassVar["Settings"] = Settings()  # type: ignore
     base_url: ClassVar[str] = "https://api.clickup.com/"
 
     http_client: "AsyncClient"
