@@ -1,31 +1,32 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 from httpx import AsyncClient, HTTPStatusError
 
-from clickup_sdk import Settings
-from clickup_sdk.helpers import get_custom_field_value, microseconds_string_to_date
-from clickup_sdk.schemas import CustomField, GetTasksResponse, Task
+from clickup_sdk.core import Settings, models
+from clickup_sdk.common import utilities
 
 
 @dataclass
 class Client:
-    settings: ClassVar["Settings"] = Settings()  # type: ignore
-    base_url: ClassVar[str] = "https://api.clickup.com/"
+    _BASE_URL: ClassVar[str] = "https://api.clickup.com/"
 
     http_client: "AsyncClient"
+    settings: Settings = field(
+        default_factory=Settings,  # type: ignore
+    )
 
     async def get_tasks(
         self,
         list_id: int,
-    ) -> GetTasksResponse:
+    ) -> models.GetTasksResponse:
         page = 0
         is_last_page = False
-        tasks: list[Task] = []
+        tasks: list[models.Task] = []
         while not is_last_page:
             try:
                 response = await self.http_client.get(
-                    url=f"{self.base_url}api/v2/list/{list_id}/task",
+                    url=f"{self._BASE_URL}api/v2/list/{list_id}/task",
                     headers={
                         "Authorization": self.settings.AUTHORIZATION,
                     },
@@ -39,31 +40,46 @@ class Client:
                 raise exc
             else:
                 response_dict: dict = response.json()
+                print(response_dict["tasks"][0])
                 is_last_page = response_dict["last_page"]
                 page += 1
                 tasks.extend(
                     [
-                        Task(
+                        models.Task(
                             id=task["id"],
                             name=task["name"],
-                            date_updated=microseconds_string_to_date(
+                            update_date=utilities.microseconds_string_to_date(
                                 microseconds_string=task["date_updated"],
                             ),
-                            date_created=microseconds_string_to_date(
+                            creation_date=utilities.microseconds_string_to_date(
                                 microseconds_string=task["date_created"],
                             ),
                             status=task["status"]["status"],
+                            start_date=utilities.microseconds_string_to_date(
+                                microseconds_string=task["start_date"]
+                            ),
+                            due_date=utilities.microseconds_string_to_date(
+                                microseconds_string=task["due_date"]
+                            ),
                             custom_fields=[
-                                CustomField(
+                                models.CustomField(
                                     name=custom_field["name"],
-                                    value=get_custom_field_value(custom_field),
+                                    value=utilities.get_custom_field_value(
+                                        custom_field
+                                    ),
                                 )
                                 for custom_field in task["custom_fields"]
+                            ],
+                            tags=[
+                                models.Tag(
+                                    name=tag["name"],
+                                )
+                                for tag in task["tags"]
                             ],
                         )
                         for task in response_dict["tasks"]
                     ]
                 )
-        return GetTasksResponse(
+        return models.GetTasksResponse(
             tasks=tasks,
         )

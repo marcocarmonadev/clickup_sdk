@@ -1,3 +1,1 @@
-from .settings import Settings
-
-from .client import Client  # isort: skip
+from .client import Client as ClickUpClient
