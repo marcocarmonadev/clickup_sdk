@@ -3,8 +3,8 @@ from typing import ClassVar
 
 from httpx import AsyncClient, HTTPStatusError
 
-from clickup_sdk.core import Settings, models
 from clickup_sdk.common import utilities
+from clickup_sdk.core import Settings, models
 
 
 @dataclass
@@ -40,7 +40,6 @@ class Client:
                 raise exc
             else:
                 response_dict: dict = response.json()
-                print(response_dict["tasks"][0])
                 is_last_page = response_dict["last_page"]
                 page += 1
                 tasks.extend(

@@ -14,7 +14,7 @@ class DropDownOption(BaseModel):
 
 
 class DropDownTypeConfig(BaseModel):
-    default: int
+    default: int | None = None
     options: list[DropDownOption]
 
 

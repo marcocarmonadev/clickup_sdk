@@ -42,9 +42,15 @@ def get_custom_field_value(
         else:
             custom_field_value = value
     elif custom_field_type == "drop_down":
-        drop_down_type_config = models.DropDownTypeConfig(**custom_field["type_config"])
-        option: int = value if value is not None else drop_down_type_config.default
-        custom_field_value = drop_down_type_config.options[option].name
+        type_config = custom_field["type_config"]
+        drop_down_type_config = models.DropDownTypeConfig(**type_config)
+        option: int | None = (
+            value if value is not None else drop_down_type_config.default
+        )
+        if option is None:
+            custom_field_value = None
+        else:
+            custom_field_value = drop_down_type_config.options[option].name
     else:
         custom_field_value = value
     return custom_field_value
