@@ -9,7 +9,7 @@ from pydantic.types import UUID4
 class DropDownOption(BaseModel):
     id: UUID4
     name: str
-    color: str
+    color: str | None
     orderindex: int
 
 
