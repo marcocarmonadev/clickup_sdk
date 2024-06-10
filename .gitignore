@@ -1,5 +1,6 @@
 envs/*
 !envs/template.env
-examples/
+example/*
+!example/main.py
 dist/
 **/__pycache__/
