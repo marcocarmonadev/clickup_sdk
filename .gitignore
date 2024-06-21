@@ -1,5 +1,5 @@
-envs/*
-!envs/template.env
+.envs/*
+!.envs/template.env
 example/*
 !example/main.py
 dist/
