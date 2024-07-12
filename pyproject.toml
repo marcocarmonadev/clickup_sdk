@@ -2,6 +2,7 @@
 name = "clickup-sdk"
 version = "0.1.5"
 description = ""
+license = "MIT"
 authors = ["Marco Carmona <marcocarmonapy@outlook.com>"]
 readme = "README.md"
 
